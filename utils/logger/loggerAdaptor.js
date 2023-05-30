@@ -1,5 +1,6 @@
 const morganLogger = require("./loggers/morgan");
-const LOGGER = "morgan";
+const config = require("config");
+const LOGGER = config.get("loggerOption");
 let loggerApp = null;
 
 if(LOGGER == "morgan"){
