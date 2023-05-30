@@ -10,16 +10,13 @@ const initialData = require("./initialData/initialData");
 var app = express();
 
 app.use(logger('dev'));
+app.use(loggerAdaptor());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
-app.use(loggerAdaptor());
 app.use(corsRouter);
-
 app.use("/api", apiRouter);
+app.use(express.static(path.join(__dirname, 'public')));
 initialData();
-
-
 
 module.exports = app;
