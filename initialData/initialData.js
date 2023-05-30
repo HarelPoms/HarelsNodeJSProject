@@ -18,10 +18,14 @@ const initialData = async () => {
       return;
     }
     let user_id = "";
+    let registerResult;
     for (let user of usersData) {
       user.password = await hashService.generateHash(user.password);
       user = normalizeUser(user);
-      user_id = await usersService.registerUser(user);
+      registerResult = await usersService.registerUser(user);
+      if(registerResult.isBusiness){
+        user_id = registerResult;
+      }
     }
     user_id = user_id._id + "";
     for (let card of cardsData) {
