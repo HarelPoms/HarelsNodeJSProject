@@ -1,5 +1,6 @@
 const _ = require("lodash");
-const Card = require("../Card");
+const mongoose = require("mongoose");
+const Card = mongoose.models.cards;
 
 const generateBizNumber = async () => {
   try {
