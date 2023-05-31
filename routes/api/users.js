@@ -1,36 +1,62 @@
 const express = require("express");
 const router = express.Router();
+const usersServiceModel = require("../../model/usersService/usersService");
+const usersValidationService = require("../../validation/usersValidationService");
+const loggedInMiddleware = require("../../middlewares/checkLoggedInMiddleware");
+const permissionsMiddleware = require("../../middlewares/permissionsMiddleware");
+const normalizeUser = require("../../model/usersService/helpers/normalizationUserService");
+const CustomError = require("../../utils/CustomError");
+const hashService = require("../../utils/hash/hashService");
+const { generateToken } = require("../../utils/token/tokenService");
 
 //Get all users, authorization : Admin, Return : array of users
-router.get("/", (req, res) => {
-    console.log("in users get all users");
-    res.json({ msg: "in users get all users" });
+router.get("/", loggedInMiddleware, permissionsMiddleware(false,true,false), async (req, res) => {
+    let allUsers = await usersServiceModel.getAllUsers();
+    res.status(200).json(allUsers);
 });
 
-//Get specific user, authorization : Admin or registered user, Return : User
-router.get("/:id", (req, res) => {
-    const idValue = 111;
-    console.log(req.params.id);
-    console.log("are ids equal ");
-    console.log(idValue == req.params.id);
-    console.log("in users get all users");
-    res.json({ msg: "in users get all users" });
+//Get specific user, authorization : Admin or the user himself, Return : User
+//TODO fix middleware to consider the user himself
+router.get("/:id", loggedInMiddleware, async (req, res) => {
+    usersValidationService.userIdValidation(req.params.id);
+    let wantedUser = usersServiceModel.getUserById(req.params.id)
+    if(wantedUser){
+        res.status(200).json(wantedUser);
+    }
+    else{
+        res.status(404).json({msg: "User not found"})
+    }
 });
 
 //Register User, authorization : all, return : registered user, needs unique email
-router.post("/", (req, res) => {
-    console.log("in users post register ");
-    res.json({ msg: "in users post register " });
+router.post("/", async (req, res) => {
+    usersValidationService.registerUserValidation(req.body);
+    let normalizedUser = await normalizeUser(req.body);
+    let createdUser = await usersServiceModel.registerUser(normalizedUser);
+    res.status(200).json(createdUser);
 });
 
 //Login User, authorization : all, return : Encrypted token
-router.post("/login", (req,res) =>{
-    console.log("in users post login");
-    res.json({ msg: "in users post login" });
+router.post("/login", async (req,res) =>{
+    await usersValidationService.loginUserValidation(req.body);
+    const userData = await usersServiceModel.getUserByEmail(req.body.email);
+    if (!userData) throw new CustomError("invalid email and/or password");
+    const isPasswordMatch = await hashService.cmpHash(
+        req.body.password,
+        userData.password
+    );
+    if (!isPasswordMatch)
+        throw new CustomError("invalid email and/or password");
+    const token = await generateToken({
+        _id: userData._id,
+        isBusiness: userData.isBusiness,
+        isAdmin: userData.isAdmin,
+    });
+    res.status(200).json({ token });
 })
 
 //Edit user, authorization : The registered user, Return : The edited user
-router.put("/:id", (req, res) => {
+router.put("/:id", async (req, res) => {
     const idValue = 111;
     console.log(req.params.id);
     console.log("are ids equal ");
@@ -41,7 +67,7 @@ router.put("/:id", (req, res) => {
 })
 
 //Change is business status, authorization : The registered user, Return : The User
-router.patch("/:id", (req, res) => {
+router.patch("/:id", async (req, res) => {
     const idValue = 111;
     console.log(req.params.id);
     console.log("are ids equal ");
@@ -52,7 +78,7 @@ router.patch("/:id", (req, res) => {
 })
 
 //Delete User, Authorization : The registered User or Admin, return : The Deleted User
-router.delete("/:id", (req, res) => {
+router.delete("/:id", async (req, res) => {
     const idValue = 111;
     console.log(req.params.id);
     console.log("are ids equal ");

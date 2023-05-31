@@ -39,10 +39,16 @@ const createCardSchema = Joi.object({
   user_id: Joi.string().hex().length(24),
 });
 
+const cardIdSchema = Joi.string().hex().length(24).required();
+
 const validateCardSchema = (userInput) => {
   return createCardSchema.validateAsync(userInput);
 };
 
+const validateCardIdSchema = (userInput) => {
+  return cardIdSchema.validateAsync(userInput);
+}
+
 module.exports = {
-  validateCardSchema,
+  validateCardSchema, validateCardIdSchema
 };
