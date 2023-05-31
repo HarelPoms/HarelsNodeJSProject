@@ -15,10 +15,10 @@ router.get("/", async (req, res) => {
 
 //Get my cards, authorization : The Registered User, return : Array of users cards
 //TODO : IMPLEMENT LOGIC
-router.get("/my-cards", loggedInMiddleware, async (req,res) =>{
+router.get("/my-cards", loggedInMiddleware, permissionsMiddleware(false,false,false,true), async (req,res) =>{
     console.log("in cards get my cards");
     res.json({ msg: "in cards get my cards" });
-})
+});
 
 //Get card by id, authorization : all, Return : The card
 router.get("/:id", async (req, res) => {
@@ -28,7 +28,7 @@ router.get("/:id", async (req, res) => {
 });
 
 //Create new card, authorization : Business User, Return : The new card
-router.post("/", loggedInMiddleware, permissionsMiddleware(true,false,false), async (req,res) => {
+router.post("/", loggedInMiddleware, permissionsMiddleware(true,false,false,false), async (req,res) => {
     cardsValidationService.createCardValidation(req.body);
     let normalCard = await normalizeCard(req.body, req.userData._id);
     const dataFromMongoose = await cardsServiceModel.createCard(normalCard);
@@ -38,7 +38,7 @@ router.post("/", loggedInMiddleware, permissionsMiddleware(true,false,false), as
 
 //TODO implement user who created card in permissions middleware, implement logic
 //Edit card, authorization : User who created the card, Return : The edited card
-router.put("/:id", loggedInMiddleware , async (req, res) => {
+router.put("/:id", loggedInMiddleware , permissionsMiddleware(false,false,false,true), async (req, res) => {
     cardsValidationService.cardIdValidation(req.params.id);
     const idValue = 111;
     console.log(req.params.id);
@@ -72,7 +72,7 @@ router.patch("/:id", loggedInMiddleware, async (req, res) => {
 
 //Delete Card, Authorization : The User who created the card, or admin, return : The Deleted Card
 //TODO implement user who created card middleware
-router.delete("/:id", loggedInMiddleware,  async (req, res) => {
+router.delete("/:id", loggedInMiddleware, permissionsMiddleware(false,true,false,true),  async (req, res) => {
     cardsValidationService.cardIdValidation(req.params.id);
     const cardFromDB = await cardsServiceModel.deleteCard(req.params.id);
     if (cardFromDB) {

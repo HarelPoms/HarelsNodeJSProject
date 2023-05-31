@@ -10,14 +10,14 @@ const hashService = require("../../utils/hash/hashService");
 const { generateToken } = require("../../utils/token/tokenService");
 
 //Get all users, authorization : Admin, Return : array of users
-router.get("/", loggedInMiddleware, permissionsMiddleware(false,true,false), async (req, res) => {
+router.get("/", loggedInMiddleware, permissionsMiddleware(false,true,false,false), async (req, res) => {
     let allUsers = await usersServiceModel.getAllUsers();
     res.status(200).json(allUsers);
 });
 
 //Get specific user, authorization : Admin or the user himself, Return : User
 //TODO fix middleware to consider the user himself
-router.get("/:id", loggedInMiddleware, async (req, res) => {
+router.get("/:id", loggedInMiddleware, permissionsMiddleware(false,true,false,true), async (req, res) => {
     usersValidationService.userIdValidation(req.params.id);
     let wantedUser = usersServiceModel.getUserById(req.params.id)
     if(wantedUser){
@@ -56,7 +56,7 @@ router.post("/login", async (req,res) =>{
 })
 
 //Edit user, authorization : The registered user, Return : The edited user
-router.put("/:id", async (req, res) => {
+router.put("/:id", loggedInMiddleware, permissionsMiddleware(false,false,false,true), async (req, res) => {
     const idValue = 111;
     console.log(req.params.id);
     console.log("are ids equal ");
@@ -67,7 +67,7 @@ router.put("/:id", async (req, res) => {
 })
 
 //Change is business status, authorization : The registered user, Return : The User
-router.patch("/:id", async (req, res) => {
+router.patch("/:id", loggedInMiddleware, permissionsMiddleware(false,false,false,true), async (req, res) => {
     const idValue = 111;
     console.log(req.params.id);
     console.log("are ids equal ");
@@ -78,7 +78,7 @@ router.patch("/:id", async (req, res) => {
 })
 
 //Delete User, Authorization : The registered User or Admin, return : The Deleted User
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", loggedInMiddleware, permissionsMiddleware(false,true,false,true),async (req, res) => {
     const idValue = 111;
     console.log(req.params.id);
     console.log("are ids equal ");

@@ -15,7 +15,7 @@ const checkIfBizOwner = async (userId, cardId, res, next) => {
     if (cardData.user_id == userId) {
       next();
     } else {
-      res.status(401).json({ msg: "you not the biz owner" });
+      res.status(401).json({ msg: "You are not the business user who owns the card" });
     }
   } catch (err) {
     res.status(400).json(err);
@@ -62,7 +62,7 @@ const permissionsMiddleware = (isBiz, isAdmin, isBizOwner, isSameUser) => {
     if (isSameUser === true){
       return checkIfTheSameUser(req.userData._id, req.params.id, res, next);
     }
-    res.status(401).json({ msg: "you not allowed to edit this card" });
+    res.status(401).json({ msg: "You are not allowed to modify this asset" });
   };
 };
 
