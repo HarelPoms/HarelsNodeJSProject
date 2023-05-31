@@ -22,7 +22,7 @@ router.get("/my-cards", loggedInMiddleware, async (req,res) =>{
 
 //Get card by id, authorization : all, Return : The card
 router.get("/:id", async (req, res) => {
-    cardsValidationService.idCardValidation(req.params.id);
+    cardsValidationService.cardIdValidation(req.params.id);
     const cardFromDB = await cardsServiceModel.getCardById(req.params.id);
     res.status(200).json(cardFromDB);
 });
@@ -39,7 +39,7 @@ router.post("/", loggedInMiddleware, permissionsMiddleware(true,false,false), as
 //TODO implement user who created card in permissions middleware, implement logic
 //Edit card, authorization : User who created the card, Return : The edited card
 router.put("/:id", loggedInMiddleware , async (req, res) => {
-    cardsValidationService.idCardValidation(req.params.id);
+    cardsValidationService.cardIdValidation(req.params.id);
     const idValue = 111;
     console.log(req.params.id);
     console.log("are ids equal ");
@@ -50,7 +50,7 @@ router.put("/:id", loggedInMiddleware , async (req, res) => {
 
 //Like card, authorization : The User is registered, Return : The Liked Card
 router.patch("/:id", loggedInMiddleware, async (req, res) => {
-    cardsValidationService.idCardValidation(req.params.id);
+    cardsValidationService.cardIdValidation(req.params.id);
     const cardFromDB = await cardsServiceModel.getCardById(req.params.id);
     const userIdStr = req.userData._id + "";
     if(cardFromDB){
@@ -73,7 +73,7 @@ router.patch("/:id", loggedInMiddleware, async (req, res) => {
 //Delete Card, Authorization : The User who created the card, or admin, return : The Deleted Card
 //TODO implement user who created card middleware
 router.delete("/:id", loggedInMiddleware,  async (req, res) => {
-    cardsValidationService.idCardValidation(req.params.id);
+    cardsValidationService.cardIdValidation(req.params.id);
     const cardFromDB = await cardsServiceModel.deleteCard(req.params.id);
     if (cardFromDB) {
         res.json({ msg: "card deleted" });
