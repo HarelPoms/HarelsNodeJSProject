@@ -18,7 +18,7 @@ router.get("/", loggedInMiddleware, permissionsMiddleware(false,true,false,false
 //Get specific user, authorization : Admin or the user himself, Return : User
 //TODO fix middleware to consider the user himself
 router.get("/:id", loggedInMiddleware, permissionsMiddleware(false,true,false,true), async (req, res) => {
-    usersValidationService.userIdValidation(req.params.id);
+    await usersValidationService.userIdValidation(req.params.id);
     let wantedUser = usersServiceModel.getUserById(req.params.id)
     if(wantedUser){
         res.status(200).json(wantedUser);
@@ -30,7 +30,7 @@ router.get("/:id", loggedInMiddleware, permissionsMiddleware(false,true,false,tr
 
 //Register User, authorization : all, return : registered user, needs unique email
 router.post("/", async (req, res) => {
-    usersValidationService.registerUserValidation(req.body);
+    await usersValidationService.registerUserValidation(req.body);
     let normalizedUser = await normalizeUser(req.body);
     let createdUser = await usersServiceModel.registerUser(normalizedUser);
     res.status(200).json(createdUser);

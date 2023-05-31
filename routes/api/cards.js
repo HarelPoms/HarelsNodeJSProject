@@ -4,7 +4,7 @@ const cardsServiceModel = require("../../model/cardsService/cardsService");
 const cardsValidationService = require("../../validation/cardsValidationService");
 const loggedInMiddleware = require("../../middlewares/checkLoggedInMiddleware");
 const permissionsMiddleware = require("../../middlewares/permissionsMiddleware");
-const normalizeCard = require("../../model/cardsService/helpers/normalizationCardService");
+const normalizeCardService = require("../../model/cardsService/helpers/normalizationCardService");
 
 //Get all cards, authorization : all, return : All Cards
 router.get("/", async (req, res) => {
@@ -22,15 +22,15 @@ router.get("/my-cards", loggedInMiddleware, permissionsMiddleware(false,false,fa
 
 //Get card by id, authorization : all, Return : The card
 router.get("/:id", async (req, res) => {
-    cardsValidationService.cardIdValidation(req.params.id);
+    await cardsValidationService.cardIdValidation(req.params.id);
     const cardFromDB = await cardsServiceModel.getCardById(req.params.id);
     res.status(200).json(cardFromDB);
 });
 
 //Create new card, authorization : Business User, Return : The new card
 router.post("/", loggedInMiddleware, permissionsMiddleware(true,false,false,false), async (req,res) => {
-    cardsValidationService.createCardValidation(req.body);
-    let normalCard = await normalizeCard(req.body, req.userData._id);
+    await cardsValidationService.createCardValidation(req.body);
+    let normalCard = await normalizeCardService(req.body, req.userData._id);
     const dataFromMongoose = await cardsServiceModel.createCard(normalCard);
     console.log("created card from Mongoose ", dataFromMongoose);
     res.status(200).json(dataFromMongoose);
@@ -39,18 +39,15 @@ router.post("/", loggedInMiddleware, permissionsMiddleware(true,false,false,fals
 //TODO implement user who created card in permissions middleware, implement logic
 //Edit card, authorization : User who created the card, Return : The edited card
 router.put("/:id", loggedInMiddleware , permissionsMiddleware(false,false,false,true), async (req, res) => {
-    cardsValidationService.cardIdValidation(req.params.id);
-    const idValue = 111;
-    console.log(req.params.id);
-    console.log("are ids equal ");
-    console.log(idValue == req.params.id);
-    console.log("in cards put");
-    res.send("in cards put");
+    await cardsValidationService.cardIdValidation(req.params.id);
+    let normalizedCard = await normalizeCardService(req.body, req.userData._id);
+    let editResult = await cardsServiceModel.updateCard(req.params.id, normalizedCard);
+    res.status(200).json(editResult);
 })
 
 //Like card, authorization : The User is registered, Return : The Liked Card
 router.patch("/:id", loggedInMiddleware, async (req, res) => {
-    cardsValidationService.cardIdValidation(req.params.id);
+    await cardsValidationService.cardIdValidation(req.params.id);
     const cardFromDB = await cardsServiceModel.getCardById(req.params.id);
     const userIdStr = req.userData._id + "";
     if(cardFromDB){
@@ -73,7 +70,7 @@ router.patch("/:id", loggedInMiddleware, async (req, res) => {
 //Delete Card, Authorization : The User who created the card, or admin, return : The Deleted Card
 //TODO implement user who created card middleware
 router.delete("/:id", loggedInMiddleware, permissionsMiddleware(false,true,false,true),  async (req, res) => {
-    cardsValidationService.cardIdValidation(req.params.id);
+    await cardsValidationService.cardIdValidation(req.params.id);
     const cardFromDB = await cardsServiceModel.deleteCard(req.params.id);
     if (cardFromDB) {
         res.json({ msg: "card deleted" });
