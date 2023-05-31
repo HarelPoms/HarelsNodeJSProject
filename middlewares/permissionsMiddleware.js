@@ -1,6 +1,9 @@
 const CustomError = require("../utils/CustomError");
 const { getCardById } = require("../model/cardsService/cardsService");
+const { getUserById } = require("../model/usersService/usersService");
+
 const {cardIdValidation} = require("../validation/cardsValidationService");
+const {userIdValidation} = require("../validation/usersValidationService");
 
 const checkIfBizOwner = async (userId, cardId, res, next) => {
   try {
@@ -19,8 +22,21 @@ const checkIfBizOwner = async (userId, cardId, res, next) => {
   }
 };
 
-const checkIfTheSameUser = async () => {
-
+const checkIfTheSameUser = async (loggedInUserId, idOfUserDataToAccess, res, next) => {
+  userIdValidation(idOfUserDataToAccess);
+  // if(userId !== idOfUserDataToAccess){
+  //   res.status(401).json({msg: "You are not allowed to access this"})
+  // }
+  const UserData = await getUserById(idOfUserDataToAccess);
+  if (!UserData) {
+    return res.status(400).json({ msg: "User not found" });
+  }
+  if (UserData._id == loggedInUserId){
+    next();
+  }
+  else{
+    res.status(401).json({ msg: "You are not the same registered user" });
+  }
 }
 
 /*
@@ -29,7 +45,7 @@ const checkIfTheSameUser = async () => {
   isBizOwner = biz owner
 */
 
-const permissionsMiddleware = (isBiz, isAdmin, isBizOwner) => {
+const permissionsMiddleware = (isBiz, isAdmin, isBizOwner, isSameUser) => {
   return (req, res, next) => {
     if (!req.userData) {
       throw new CustomError("must provide userData");
@@ -42,6 +58,9 @@ const permissionsMiddleware = (isBiz, isAdmin, isBizOwner) => {
     }
     if (isBizOwner === req.userData.isBusiness && isBizOwner === true) {
       return checkIfBizOwner(req.userData._id, req.params.id, res, next);
+    }
+    if (isSameUser === true){
+      return checkIfTheSameUser(req.userData._id, req.params.id, res, next);
     }
     res.status(401).json({ msg: "you not allowed to edit this card" });
   };
