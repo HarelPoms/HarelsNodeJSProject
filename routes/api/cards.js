@@ -14,10 +14,10 @@ router.get("/", async (req, res) => {
 });
 
 //Get my cards, authorization : The Registered User, return : Array of users cards
-//TODO : IMPLEMENT LOGIC
+//DOUBLE CHECK
 router.get("/my-cards", loggedInMiddleware, permissionsMiddleware(false,false,false,true), async (req,res) =>{
-    console.log("in cards get my cards");
-    res.json({ msg: "in cards get my cards" });
+    let cardsCreatedByUser = await cardsServiceModel.getCardsCreatedByUser(req.userData._id);
+    res.status(200).json(cardsCreatedByUser);
 });
 
 //Get card by id, authorization : all, Return : The card
@@ -36,9 +36,8 @@ router.post("/", loggedInMiddleware, permissionsMiddleware(true,false,false,fals
     res.status(200).json(dataFromMongoose);
 });
 
-//TODO implement user who created card in permissions middleware, implement logic
 //Edit card, authorization : User who created the card, Return : The edited card
-router.put("/:id", loggedInMiddleware , permissionsMiddleware(false,false,false,true), async (req, res) => {
+router.put("/:id", loggedInMiddleware , permissionsMiddleware(false,false,true,false), async (req, res) => {
     await cardsValidationService.cardIdValidation(req.params.id);
     let normalizedCard = await normalizeCardService(req.body, req.userData._id);
     let editResult = await cardsServiceModel.updateCard(req.params.id, normalizedCard);
@@ -68,8 +67,7 @@ router.patch("/:id", loggedInMiddleware, async (req, res) => {
 })
 
 //Delete Card, Authorization : The User who created the card, or admin, return : The Deleted Card
-//TODO implement user who created card middleware
-router.delete("/:id", loggedInMiddleware, permissionsMiddleware(false,true,false,true),  async (req, res) => {
+router.delete("/:id", loggedInMiddleware, permissionsMiddleware(false,true,true,false),  async (req, res) => {
     await cardsValidationService.cardIdValidation(req.params.id);
     const cardFromDB = await cardsServiceModel.deleteCard(req.params.id);
     if (cardFromDB) {

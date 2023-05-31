@@ -25,6 +25,18 @@ const getCardByBizNumber = (bizNumber) => {
   }
 };
 
+const getCardsCreatedByUser = (id) => {
+  if (dbOption === "mongo") {
+    return cardsServiceMongo.getCardsCreatedByUser(id);
+  }
+};
+
+const getCardsLikedByUser = (id) => {
+  if (dbOption === "mongo") {
+    return cardsServiceMongo.getCardsLikedByUser(id);
+  }
+};
+
 const updateCard = (id, cardToUpdate) => {
   if (dbOption === "mongo") {
     return cardsServiceMongo.updateCard(id, cardToUpdate);
@@ -37,18 +49,13 @@ const deleteCard = (id) => {
   }
 };
 
-const getCardsLikedByUser = (id) => {
-  if (dbOption === "mongo") {
-    return cardsServiceMongo.getCardsLikedByUser(id);
-  }
-}
-
 module.exports = {
   createCard,
   getAllCards,
   getCardById,
   getCardByBizNumber,
   getCardsLikedByUser,
+  getCardsCreatedByUser,
   updateCard,
   deleteCard,
 };

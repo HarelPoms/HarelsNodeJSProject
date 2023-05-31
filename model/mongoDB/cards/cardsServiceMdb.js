@@ -1,4 +1,6 @@
 const Card = require("./Card");
+const mongoose = require("mongoose");
+
 
 const createCard = (cardToSave) => {
   let card = new Card(cardToSave);
@@ -31,12 +33,17 @@ const getCardsLikedByUser = (id) => {
   return Card.find({likes: id});
 }
 
+const getCardsCreatedByUser = (id) => {
+  return Card.find({user_id: mongoose.Types.ObjectId(id)});
+}
+
 module.exports = {
   createCard,
   getAllCards,
   getCardById,
   getCardByBizNumber,
   getCardsLikedByUser,
+  getCardsCreatedByUser,
   updateCard,
   deleteCard,
 };
