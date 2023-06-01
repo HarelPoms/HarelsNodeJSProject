@@ -57,6 +57,7 @@ router.post("/login", async (req,res) =>{
 
 //Edit user, authorization : The registered user, Return : The edited user
 router.put("/:id", loggedInMiddleware, permissionsMiddleware(false,false,false,true), async (req, res) => {
+    
     const idValue = 111;
     console.log(req.params.id);
     console.log("are ids equal ");

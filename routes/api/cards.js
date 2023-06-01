@@ -5,10 +5,10 @@ const cardsValidationService = require("../../validation/cardsValidationService"
 const loggedInMiddleware = require("../../middlewares/checkLoggedInMiddleware");
 const permissionsMiddleware = require("../../middlewares/permissionsMiddleware");
 const normalizeCardService = require("../../model/cardsService/helpers/normalizationCardService");
+const mongoose = require("mongoose");
 
 //Get all cards, authorization : all, return : All Cards
 router.get("/", async (req, res) => {
-    console.log("in cards get");
     const allCards = await cardsServiceModel.getAllCards();
     res.status(200).json(allCards);
 });
@@ -16,7 +16,7 @@ router.get("/", async (req, res) => {
 //Get my cards, authorization : The Registered User, return : Array of users cards
 //DOUBLE CHECK
 router.get("/my-cards", loggedInMiddleware, permissionsMiddleware(false,false,false,true), async (req,res) =>{
-    let cardsCreatedByUser = await cardsServiceModel.getCardsCreatedByUser(req.userData._id);
+    let cardsCreatedByUser = await cardsServiceModel.getCardsCreatedByUser(mongoose.Types.ObjectId(req.userData._id));
     res.status(200).json(cardsCreatedByUser);
 });
 
