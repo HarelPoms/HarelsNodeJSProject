@@ -17,9 +17,27 @@ const getUserById = (id) => {
   return User.findById(id);
 }
 
+const updateUser = (id, userToUpdate) => {
+  return User.findByIdAndUpdate(id, userToUpdate, {new: true});
+};
+
+const changeBusinessStatusById = (id) => {
+  let userToChange = User.findById(id);
+  userToChange.isBusiness = !userToChange.isBusiness;
+  return updateUser(id,userToChange);
+}
+
+const deleteUserById = (id) => {
+  return User.findByIdAndDelete(id);
+}
+
+
 module.exports = {
   registerUser,
   getUserByEmail,
   getAllUsers,
-  getUserById
+  getUserById,
+  updateUser,
+  changeBusinessStatusById,
+  deleteUserById
 };

@@ -57,36 +57,24 @@ router.post("/login", async (req,res) =>{
 
 //Edit user, authorization : The registered user, Return : The edited user
 router.put("/:id", loggedInMiddleware, permissionsMiddleware(false,false,false,true), async (req, res) => {
-    
-    const idValue = 111;
-    console.log(req.params.id);
-    console.log("are ids equal ");
-    console.log(idValue == req.params.id);
-    console.log("in users put, Edit User");
-    res.send("in users put, Edit User");
-    //res.json({msg: "in cards put"});
-})
+    await usersValidationService.registerUserValidation(req.body);
+    let normalizedEditedUser = normalizeUser(req.body);
+    let editResult = await usersServiceModel.updateUser(req.params.id, normalizedEditedUser);
+    res.status(200).json({editResult});
+});
 
 //Change is business status, authorization : The registered user, Return : The User
 router.patch("/:id", loggedInMiddleware, permissionsMiddleware(false,false,false,true), async (req, res) => {
-    const idValue = 111;
-    console.log(req.params.id);
-    console.log("are ids equal ");
-    console.log(idValue == req.params.id);
-    console.log("in users patch");
-    res.send("in users patch");
-    //res.json({msg: "in cards put"});
+    await usersValidationService.userIdValidation(req.params.id);
+    let businessStatusUpdateResult = await usersServiceModel.changeBusinessStatusById(req.params.id);
+    res.status(200).json(businessStatusUpdateResult);
 })
 
 //Delete User, Authorization : The registered User or Admin, return : The Deleted User
 router.delete("/:id", loggedInMiddleware, permissionsMiddleware(false,true,false,true),async (req, res) => {
-    const idValue = 111;
-    console.log(req.params.id);
-    console.log("are ids equal ");
-    console.log(idValue == req.params.id);
-    console.log("in users delete");
-    res.send("in users delete");
-    //res.json({msg: "in cards put"});
+    await usersValidationService.userIdValidation(req.params.id);
+    let deletedUser = await usersServiceModel.deleteUserById(req.params.id);
+    res.status(200).json(deletedUser);
 })
 
 

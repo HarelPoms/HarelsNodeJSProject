@@ -26,9 +26,30 @@ const getUserById = (id) => {
   }
 };
 
+const updateUser = (id, userToUpdate) => {
+  if (dbOption === "mongo") {
+    return usersServiceMongo.updateUser(id, userToUpdate);
+  }
+};
+
+const changeBusinessStatusById = (id) => {
+  if (dbOption === "mongo") {
+    return usersServiceMongo.changeBusinessStatusById(id);
+  }
+};
+
+const deleteUserById = (id) => {
+  if (dbOption === "mongo") {
+    return usersServiceMongo.deleteUserById(id);
+  }
+};
+
 module.exports = {
   registerUser,
   getUserByEmail,
   getAllUsers,
-  getUserById
+  getUserById,
+  updateUser,
+  changeBusinessStatusById,
+  deleteUserById
 };
