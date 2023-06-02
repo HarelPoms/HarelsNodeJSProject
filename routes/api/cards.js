@@ -42,7 +42,7 @@ router.put("/:id", loggedInMiddleware , permissionsMiddleware(false,false,true,f
     await cardsValidationService.cardIdValidation(req.params.id);
     let normalizedCard = await normalizeCardService(req.body, req.userData._id);
     let editResult = await cardsServiceModel.updateCard(req.params.id, normalizedCard);
-    res.status(200).json({editResult});
+    res.status(200).json(editResult);
 })
 
 //Like card, authorization : The User is registered, Return : The Liked Card
