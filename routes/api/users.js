@@ -32,6 +32,7 @@ router.get("/:id", loggedInMiddleware, permissionsMiddleware(false,true,false,tr
 router.post("/", async (req, res) => {
     await usersValidationService.registerUserValidation(req.body);
     let normalizedUser = await normalizeUser(req.body);
+    normalizedUser.password = await hashService.generateHash(normalizedUser.password);
     let createdUser = await usersServiceModel.registerUser(normalizedUser);
     res.status(200).json({createdUser});
 });
@@ -40,6 +41,7 @@ router.post("/", async (req, res) => {
 router.post("/login", async (req,res) =>{
     await usersValidationService.loginUserValidation(req.body);
     const userData = await usersServiceModel.getUserByEmail(req.body.email);
+    console.log(userData);
     if (!userData) throw new CustomError("invalid email and/or password");
     const isPasswordMatch = await hashService.cmpHash(
         req.body.password,
@@ -59,7 +61,7 @@ router.post("/login", async (req,res) =>{
 router.put("/:id", loggedInMiddleware, permissionsMiddleware(false,false,false,true), async (req, res) => {
     await usersValidationService.registerUserValidation(req.body);
     let normalizedEditedUser = normalizeUser(req.body);
-    normalizedEditedUser.password = await hashService.generateHash(normalizedEditedUser .password);
+    normalizedEditedUser.password = await hashService.generateHash(normalizedEditedUser.password);
     let editResult = await usersServiceModel.updateUser(req.params.id, normalizedEditedUser);
     res.status(200).json({editResult});
 });

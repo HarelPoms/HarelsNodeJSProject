@@ -22,7 +22,7 @@ const checkIfBizOwner = async (userId, cardId, res, next) => {
   }
 };
 
-const checkIfTheSameUser = async (loggedInUserId, idOfUserDataToAccess, res, next) => {
+const userCheckIfTheSameUser = async (loggedInUserId, idOfUserDataToAccess, res, next) => {
   userIdValidation(idOfUserDataToAccess);
   // if(userId !== idOfUserDataToAccess){
   //   res.status(401).json({msg: "You are not allowed to access this"})
@@ -45,7 +45,7 @@ const checkIfTheSameUser = async (loggedInUserId, idOfUserDataToAccess, res, nex
   isBizOwner = biz owner
 */
 
-const permissionsMiddleware = (isBiz, isAdmin, isBizOwner, isSameUser) => {
+const permissionsMiddleware = (isBiz, isAdmin, isBizOwner, isSameUserApiCheck) => {
   return (req, res, next) => {
     if (!req.userData) {
       throw new CustomError("must provide userData");
@@ -59,8 +59,8 @@ const permissionsMiddleware = (isBiz, isAdmin, isBizOwner, isSameUser) => {
     if (isBizOwner === req.userData.isBusiness && isBizOwner === true) {
       return checkIfBizOwner(req.userData._id, req.params.id, res, next);
     }
-    if (isSameUser === true){
-      return checkIfTheSameUser(req.userData._id, req.params.id, res, next);
+    if (isSameUserApiCheck === true){
+      return userCheckIfTheSameUser(req.userData._id, req.params.id, res, next);
     }
     res.status(401).json({ msg: "You are not allowed to modify this asset" });
   };
