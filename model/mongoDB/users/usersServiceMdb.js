@@ -22,9 +22,7 @@ const updateUser = (id, userToUpdate) => {
 };
 
 const changeBusinessStatusById = (id) => {
-  let userToChange = User.findById(id);
-  userToChange.isBusiness = !userToChange.isBusiness;
-  return updateUser(id,userToChange);
+  return User.findByIdAndUpdate(id, [{ $set: { isBusiness: { $not: "$isBusiness" } } }], {new:true});
 }
 
 const deleteUserById = (id) => {

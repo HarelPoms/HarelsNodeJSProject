@@ -19,9 +19,9 @@ router.get("/", loggedInMiddleware, permissionsMiddleware(false,true,false,false
 //TODO fix middleware to consider the user himself
 router.get("/:id", loggedInMiddleware, permissionsMiddleware(false,true,false,true), async (req, res) => {
     await usersValidationService.userIdValidation(req.params.id);
-    let wantedUser = usersServiceModel.getUserById(req.params.id)
+    let wantedUser = await usersServiceModel.getUserById(req.params.id);
     if(wantedUser){
-        res.status(200).json(wantedUser);
+        res.status(200).json({wantedUser});
     }
     else{
         res.status(404).json({msg: "User not found"})
@@ -33,7 +33,7 @@ router.post("/", async (req, res) => {
     await usersValidationService.registerUserValidation(req.body);
     let normalizedUser = await normalizeUser(req.body);
     let createdUser = await usersServiceModel.registerUser(normalizedUser);
-    res.status(200).json(createdUser);
+    res.status(200).json({createdUser});
 });
 
 //Login User, authorization : all, return : Encrypted token
@@ -59,6 +59,7 @@ router.post("/login", async (req,res) =>{
 router.put("/:id", loggedInMiddleware, permissionsMiddleware(false,false,false,true), async (req, res) => {
     await usersValidationService.registerUserValidation(req.body);
     let normalizedEditedUser = normalizeUser(req.body);
+    normalizedEditedUser.password = await hashService.generateHash(normalizedEditedUser .password);
     let editResult = await usersServiceModel.updateUser(req.params.id, normalizedEditedUser);
     res.status(200).json({editResult});
 });
@@ -67,14 +68,14 @@ router.put("/:id", loggedInMiddleware, permissionsMiddleware(false,false,false,t
 router.patch("/:id", loggedInMiddleware, permissionsMiddleware(false,false,false,true), async (req, res) => {
     await usersValidationService.userIdValidation(req.params.id);
     let businessStatusUpdateResult = await usersServiceModel.changeBusinessStatusById(req.params.id);
-    res.status(200).json(businessStatusUpdateResult);
+    res.status(200).json({businessStatusUpdateResult});
 })
 
 //Delete User, Authorization : The registered User or Admin, return : The Deleted User
 router.delete("/:id", loggedInMiddleware, permissionsMiddleware(false,true,false,true),async (req, res) => {
     await usersValidationService.userIdValidation(req.params.id);
     let deletedUser = await usersServiceModel.deleteUserById(req.params.id);
-    res.status(200).json(deletedUser);
+    res.status(200).json({deletedUser});
 })
 
 
