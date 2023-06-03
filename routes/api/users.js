@@ -21,7 +21,7 @@ router.get("/:id", loggedInMiddleware, permissionsMiddleware(false,true,false,tr
     await usersValidationService.userIdValidation(req.params.id);
     let wantedUser = await usersServiceModel.getUserById(req.params.id);
     if(wantedUser){
-        res.status(200).json({wantedUser});
+        res.status(200).json(wantedUser);
     }
     else{
         res.status(404).json({msg: "User not found"})
@@ -63,21 +63,21 @@ router.put("/:id", loggedInMiddleware, permissionsMiddleware(false,false,false,t
     let normalizedEditedUser = normalizeUser(req.body);
     normalizedEditedUser.password = await hashService.generateHash(normalizedEditedUser.password);
     let editResult = await usersServiceModel.updateUser(req.params.id, normalizedEditedUser);
-    res.status(200).json({editResult});
+    res.status(200).json(editResult);
 });
 
 //Change is business status, authorization : The registered user, Return : The User
 router.patch("/:id", loggedInMiddleware, permissionsMiddleware(false,false,false,true), async (req, res) => {
     await usersValidationService.userIdValidation(req.params.id);
     let businessStatusUpdateResult = await usersServiceModel.changeBusinessStatusById(req.params.id);
-    res.status(200).json({businessStatusUpdateResult});
+    res.status(200).json(businessStatusUpdateResult);
 })
 
 //Delete User, Authorization : The registered User or Admin, return : The Deleted User
 router.delete("/:id", loggedInMiddleware, permissionsMiddleware(false,true,false,true),async (req, res) => {
     await usersValidationService.userIdValidation(req.params.id);
     let deletedUser = await usersServiceModel.deleteUserById(req.params.id);
-    res.status(200).json({deletedUser});
+    res.status(200).json(deletedUser);
 })
 
 
