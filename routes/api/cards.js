@@ -80,5 +80,4 @@ router.delete("/:id", loggedInMiddleware, permissionsMiddleware(false,true,true,
     }
 })
 
-
 module.exports = router;

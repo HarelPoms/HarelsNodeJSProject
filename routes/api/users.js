@@ -80,5 +80,4 @@ router.delete("/:id", loggedInMiddleware, permissionsMiddleware(false,true,false
     res.status(200).json(deletedUser);
 })
 
-
 module.exports = router;
