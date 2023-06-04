@@ -16,8 +16,7 @@ router.use((req, res, next) => {
 });
 
 router.use((error, req, res, next) => {
-    console.log("error", error);
-    errorHandler(res, 500, "Internal server error occured");
+    errorHandler(res, error.status, error.msg);
 });
 
 

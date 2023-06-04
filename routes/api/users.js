@@ -9,8 +9,10 @@ const CustomError = require("../../utils/CustomError");
 const hashService = require("../../utils/hash/hashService");
 const { generateToken } = require("../../utils/token/tokenService");
 
+//Error template : return next(new CustomError(500,"Fail"));
+
 //Get all users, authorization : Admin, Return : array of users
-router.get("/", loggedInMiddleware, permissionsMiddleware(false,true,false,false), async (req, res) => {
+router.get("/", loggedInMiddleware, permissionsMiddleware(false,true,false,false), async (req, res,next) => {
     let allUsers = await usersServiceModel.getAllUsers();
     res.status(200).json(allUsers);
 });
@@ -34,21 +36,26 @@ router.post("/", async (req, res) => {
     let normalizedUser = await normalizeUser(req.body);
     normalizedUser.password = await hashService.generateHash(normalizedUser.password);
     let createdUser = await usersServiceModel.registerUser(normalizedUser);
-    res.status(200).json({createdUser});
+    if(createdUser){
+        res.status(200).json(createdUser);
+    }
+    else{
+        res.status(500).json({msg: "Registration went wrong"});
+    }
 });
 
 //Login User, authorization : all, return : Encrypted token
-router.post("/login", async (req,res) =>{
+router.post("/login", async (req,res, next) =>{
     await usersValidationService.loginUserValidation(req.body);
     const userData = await usersServiceModel.getUserByEmail(req.body.email);
     console.log(userData);
-    if (!userData) throw new CustomError("invalid email and/or password");
+    if (!userData) return next(new CustomError(400,"invalid email and/or password"));
     const isPasswordMatch = await hashService.cmpHash(
         req.body.password,
         userData.password
     );
     if (!isPasswordMatch)
-        throw new CustomError("invalid email and/or password");
+        return next(new CustomError(400,"invalid email and/or password"));
     const token = await generateToken({
         _id: userData._id,
         isBusiness: userData.isBusiness,
@@ -63,21 +70,36 @@ router.put("/:id", loggedInMiddleware, permissionsMiddleware(false,false,false,t
     let normalizedEditedUser = normalizeUser(req.body);
     normalizedEditedUser.password = await hashService.generateHash(normalizedEditedUser.password);
     let editResult = await usersServiceModel.updateUser(req.params.id, normalizedEditedUser);
-    res.status(200).json(editResult);
+    if(editResult){
+        res.status(200).json(editResult);
+    }
+    else{
+        res.status(400).json({msg: "Use to edit not found"});
+    }
 });
 
 //Change is business status, authorization : The registered user, Return : The User
 router.patch("/:id", loggedInMiddleware, permissionsMiddleware(false,false,false,true), async (req, res) => {
     await usersValidationService.userIdValidation(req.params.id);
     let businessStatusUpdateResult = await usersServiceModel.changeBusinessStatusById(req.params.id);
-    res.status(200).json(businessStatusUpdateResult);
+    if(businessStatusUpdateResult){
+        res.status(200).json(businessStatusUpdateResult);
+    }
+    else{
+        res.status(400).json({msg: "User to update not found"});
+    }
 })
 
 //Delete User, Authorization : The registered User or Admin, return : The Deleted User
 router.delete("/:id", loggedInMiddleware, permissionsMiddleware(false,true,false,true),async (req, res) => {
     await usersValidationService.userIdValidation(req.params.id);
     let deletedUser = await usersServiceModel.deleteUserById(req.params.id);
-    res.status(200).json(deletedUser);
+    if(deletedUser){
+        res.status(200).json(deletedUser);
+    }
+    else{
+        res.status(400).json({msg: "User to delete not found"});
+    }
 })
 
 module.exports = router;

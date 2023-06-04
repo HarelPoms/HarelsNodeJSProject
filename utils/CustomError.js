@@ -1,7 +1,9 @@
 class CustomError {
   msg;
-  constructor(errMsg) {
+  status;
+  constructor(statusArg,errMsg) {
     this.msg = errMsg;
+    this.status = statusArg;
   }
 }
 
