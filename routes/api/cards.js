@@ -29,7 +29,6 @@ router.get("/:id", async (req, res) => {
     else{
         res.status(400).json({msg: "Card to get not found"});
     }
-    
 });
 
 //Create new card, authorization : Business User, Return : The new card
