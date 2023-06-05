@@ -25,7 +25,6 @@ router.get("/:id", loggedInMiddleware, permissionsMiddleware(false,true,false,tr
         await usersValidationService.userIdValidation(req.params.id);
     }
     catch(err){
-        console.log(err);
         return next(new CustomError(400,"Invalid id provided"));
     }
     
