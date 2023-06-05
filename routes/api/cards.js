@@ -5,6 +5,8 @@ const cardsValidationService = require("../../validation/cardsValidationService"
 const loggedInMiddleware = require("../../middlewares/checkLoggedInMiddleware");
 const permissionsMiddleware = require("../../middlewares/permissionsMiddleware");
 const normalizeCardService = require("../../model/cardsService/helpers/normalizationCardService");
+const CustomError = require("../../utils/CustomError");
+const finalCheck = require("../../utils/finalResponseChecker");
 
 //Get all cards, authorization : all, return : All Cards
 router.get("/", async (req, res) => {
@@ -20,15 +22,16 @@ router.get("/my-cards", loggedInMiddleware, permissionsMiddleware(true,false,fal
 });
 
 //Get card by id, authorization : all, Return : The card
-router.get("/:id", async (req, res) => {
-    await cardsValidationService.cardIdValidation(req.params.id);
+router.get("/:id", async (req, res, next) => {
+    try{
+        await cardsValidationService.cardIdValidation(req.params.id);
+    }
+    catch{
+        return next(new CustomError(400,"Card Id is invalid"));
+    }
+    
     const cardFromDB = await cardsServiceModel.getCardById(req.params.id);
-    if(cardFromDB){
-        res.status(200).json(cardFromDB);
-    }
-    else{
-        res.status(400).json({msg: "Card to get not found"});
-    }
+    finalCheck(res, cardFromDB, 400, "Card to get not found");
 });
 
 //Create new card, authorization : Business User, Return : The new card
@@ -36,13 +39,7 @@ router.post("/", loggedInMiddleware, permissionsMiddleware(true,false,false,fals
     await cardsValidationService.createCardValidation(req.body);
     let normalCard = await normalizeCardService(req.body, req.userData._id);
     const newCard = await cardsServiceModel.createCard(normalCard);
-    console.log("created card from Mongoose ", newCard);
-    if(newCard){
-        res.status(200).json(newCard);
-    }
-    else{
-        res.status(400).json({msg: "Card not created"});
-    }
+    finalCheck(res, newCard, 500, "Card not created");
 });
 
 //Edit card, authorization : User who created the card, Return : The edited card
@@ -51,12 +48,7 @@ router.put("/:id", loggedInMiddleware , permissionsMiddleware(false,false,true,f
     await cardsValidationService.cardIdValidation(req.params.id);
     let normalizedCard = await normalizeCardService(req.body, req.userData._id);
     let editResult = await cardsServiceModel.updateCard(req.params.id, normalizedCard);
-    if(editResult){
-        res.status(200).json(editResult);
-    }
-    else{
-        res.status(400).json({msg:"Card to edit not found"});
-    }
+    finalCheck(res, editResult, 400, "Card to edit not found");
 })
 
 //Like card, authorization : The User is registered, Return : The Liked Card
@@ -87,11 +79,7 @@ router.patch("/:id", loggedInMiddleware, async (req, res) => {
 router.delete("/:id", loggedInMiddleware, permissionsMiddleware(false,true,true,false),  async (req, res) => {
     await cardsValidationService.cardIdValidation(req.params.id);
     const cardFromDB = await cardsServiceModel.deleteCard(req.params.id);
-    if (cardFromDB) {
-        res.status(200).json(cardFromDB);
-    } else {
-        res.status(400).json({ msg: "could not find the card" });
-    }
+    finalCheck(res, cardFromDB, 400, "Could not find the card to delete");
 })
 
 module.exports = router;
