@@ -23,19 +23,24 @@ const checkIfBizOwner = async (userId, cardId, res, next) => {
 };
 
 const userCheckIfTheSameUser = async (loggedInUserId, idOfUserDataToAccess, res, next) => {
-  userIdValidation(idOfUserDataToAccess);
-  // if(userId !== idOfUserDataToAccess){
-  //   res.status(401).json({msg: "You are not allowed to access this"})
-  // }
-  const UserData = await getUserById(idOfUserDataToAccess);
-  if (!UserData) {
-    return res.status(400).json({ msg: "User not found" });
+  try{
+    userIdValidation(idOfUserDataToAccess);
+    // if(loggedInUserId !== idOfUserDataToAccess){
+    //   res.status(401).json({msg: "You are not allowed to access this"})
+    // }
+    const UserData = await getUserById(idOfUserDataToAccess);
+    if (!UserData) {
+      return res.status(400).json({ msg: "User not found" });
+    }
+    if (UserData._id == loggedInUserId){
+      next();
+    }
+    else{
+      res.status(401).json({ msg: "You are not the same registered user" });
+    }
   }
-  if (UserData._id == loggedInUserId){
-    next();
-  }
-  else{
-    res.status(401).json({ msg: "You are not the same registered user" });
+  catch(err){
+    res.status(400).json(err);
   }
 }
 
@@ -43,6 +48,7 @@ const userCheckIfTheSameUser = async (loggedInUserId, idOfUserDataToAccess, res,
   isBiz = every biz
   isAdmin = is admin
   isBizOwner = biz owner
+  isSameUserApiCheck = To check if the user requesting access to user data, is the same user
 */
 
 const permissionsMiddleware = (isBiz, isAdmin, isBizOwner, isSameUserApiCheck) => {
