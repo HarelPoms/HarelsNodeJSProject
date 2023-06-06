@@ -26,13 +26,12 @@ router.get("/my-cards", loggedInMiddleware, permissionsMiddleware(true,false,fal
 router.get("/:id", async (req, res, next) => {
     let idTest = await initialValidationService.initialJoiValidation(cardsValidationService.cardIdValidation, req.params.id);
     if(!idTest) return next(new CustomError(400, "Card Id is invalid"));
-    
     const cardFromDB = await cardsServiceModel.getCardById(req.params.id);
     finalCheck(res, cardFromDB, 400, "Card to get not found");
 });
 
 //Create new card, authorization : Business User, Return : The new card
-router.post("/", loggedInMiddleware, permissionsMiddleware(true,false,false,false), async (req,res) => {
+router.post("/", loggedInMiddleware, permissionsMiddleware(true,false,false,false), async (req,res,next) => {
     let newCardBodyTest = await initialValidationService.initialJoiValidation(cardsValidationService.createCardValidation, req.body);
     if(!newCardBodyTest) return next(new CustomError(400,"Invalid card data provided"));
     let normalCard = await normalizeCardService(req.body, req.userData._id);
@@ -42,7 +41,7 @@ router.post("/", loggedInMiddleware, permissionsMiddleware(true,false,false,fals
 
 //Edit card, authorization : User who created the card, Return : The edited card
 //Need to DOUBLE CHECK AND RETHINK THE LOGIC, Normalization needs expanding/rework
-router.put("/:id", loggedInMiddleware , permissionsMiddleware(false,false,true,false), async (req, res) => {
+router.put("/:id", loggedInMiddleware , permissionsMiddleware(false,false,true,false), async (req, res,next) => {
     let idTest = await initialValidationService.initialJoiValidation(cardsValidationService.cardIdValidation, req.params.id);
     if(!idTest) return next(new CustomError(400, "Card Id is invalid"));
     let editBodyTest = await initialValidationService.initialJoiValidation(cardsValidationService.createCardValidation, req.body);
@@ -53,7 +52,7 @@ router.put("/:id", loggedInMiddleware , permissionsMiddleware(false,false,true,f
 })
 
 //Like card, authorization : The User is registered, Return : The Liked Card
-router.patch("/:id", loggedInMiddleware, async (req, res) => {
+router.patch("/:id", loggedInMiddleware, async (req, res, next) => {
     let idTest = await initialValidationService.initialJoiValidation(cardsValidationService.cardIdValidation, req.params.id);
     if(!idTest) return next(new CustomError(400, "Card Id is invalid"));
     const cardFromDB = await cardsServiceModel.getCardById(req.params.id);
@@ -78,7 +77,7 @@ router.patch("/:id", loggedInMiddleware, async (req, res) => {
 })
 
 //Delete Card, Authorization : The User who created the card, or admin, return : The Deleted Card
-router.delete("/:id", loggedInMiddleware, permissionsMiddleware(false,true,true,false),  async (req, res) => {
+router.delete("/:id", loggedInMiddleware, permissionsMiddleware(false,true,true,false),  async (req, res,next) => {
     let idTest = await initialValidationService.initialJoiValidation(cardsValidationService.cardIdValidation, req.params.id);
     if(!idTest) return next(new CustomError(400, "Card Id is invalid"));
     const cardFromDB = await cardsServiceModel.deleteCard(req.params.id);
