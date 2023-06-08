@@ -44,7 +44,7 @@ router.post("/", loggedInMiddleware, permissionsMiddleware(true,false,false,fals
 router.put("/:id", loggedInMiddleware , permissionsMiddleware(false,false,true,false), async (req, res,next) => {
     let idTest = await initialValidationService.initialJoiValidation(cardsValidationService.cardIdValidation, req.params.id);
     if(!idTest) return next(new CustomError(400, "Card Id is invalid"));
-    let editBodyTest = await initialValidationService.initialJoiValidation(cardsValidationService.createCardValidation, req.body);
+    let editBodyTest = await initialValidationService.initialJoiValidation(cardsValidationService.editCardValidation, req.body);
     if(!editBodyTest) return next(new CustomError(400,"Invalid card data provided"));
     let normalizedCard = await normalizeCardService(req.body, req.userData._id);
     let editResult = await cardsServiceModel.updateCard(req.params.id, normalizedCard);

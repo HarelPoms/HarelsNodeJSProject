@@ -5,10 +5,17 @@ const validatorOption = config.get("validatorOption");
 
 const createCardValidation = (userInput) => {
   if (validatorOption === "Joi") {
-    return joiCardsValidation.validateCardSchema(userInput);
+    return joiCardsValidation.validateCreateCardSchema(userInput);
   }
   throw new Error("validator undefined");
 };
+
+const editCardValidation = (userInput) => {
+  if (validatorOption === "Joi") {
+    return joiCardsValidation.validateEditCardSchema(userInput);
+  }
+  throw new Error("validator undefined");
+}
 
 const cardIdValidation = (userInput) => {
   if (validatorOption === "Joi") {
@@ -18,5 +25,5 @@ const cardIdValidation = (userInput) => {
 }
 
 module.exports = {
-  createCardValidation, cardIdValidation
+  createCardValidation, editCardValidation, cardIdValidation
 };

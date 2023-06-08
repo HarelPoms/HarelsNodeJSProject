@@ -1,6 +1,5 @@
 const Joi = require("joi");
-
-const createCardSchema = Joi.object({
+const createCardTemplate = {
   title: Joi.string().min(2).max(256).required(),
   subTitle: Joi.string().min(2).max(256).required(),
   description: Joi.string().min(2).max(1024).required(),
@@ -37,18 +36,26 @@ const createCardSchema = Joi.object({
   }),
   bizNumber: Joi.number().min(1000000).max(9999999).allow(""),
   user_id: Joi.string().hex().length(24),
-});
+};
+
+const createCardSchema = Joi.object({...createCardTemplate});
+
+const editCardSchema = Joi.object({...createCardTemplate, likes: Joi.array().items(Joi.string())});
 
 const cardIdSchema = Joi.string().hex().length(24).required();
 
-const validateCardSchema = (userInput) => {
+const validateCreateCardSchema = (userInput) => {
   return createCardSchema.validateAsync(userInput);
 };
+
+const validateEditCardSchema = (userInput) => {
+  return editCardSchema.validateAsync(userInput);
+}
 
 const validateCardIdSchema = (userInput) => {
   return cardIdSchema.validateAsync(userInput);
 }
 
 module.exports = {
-  validateCardSchema, validateCardIdSchema
+  validateCreateCardSchema, validateEditCardSchema, validateCardIdSchema
 };
