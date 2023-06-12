@@ -7,7 +7,7 @@ const {userIdValidation} = require("../validation/usersValidationService");
 
 const checkIfBizOwner = async (userId, cardId, res, next) => {
   try {
-    cardIdValidation(cardId);
+    await cardIdValidation(cardId);
     const cardData = await getCardById(cardId);
     if (!cardData) {
       return res.status(400).json({ msg: "card not found" });
@@ -24,7 +24,7 @@ const checkIfBizOwner = async (userId, cardId, res, next) => {
 
 const userCheckIfTheSameUser = async (loggedInUserId, idOfUserDataToAccess, res, next) => {
   try{
-    userIdValidation(idOfUserDataToAccess);
+    await userIdValidation(idOfUserDataToAccess);
     // if(loggedInUserId !== idOfUserDataToAccess){
     //   res.status(401).json({msg: "You are not allowed to access this"})
     // }
