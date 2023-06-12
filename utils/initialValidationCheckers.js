@@ -4,7 +4,6 @@ const initialJoiValidation = async (ValidationMethod, ObjectToValidate) => {
         return true;
     }
     catch(err){
-        console.log(err);
         return false;
     }
 }
