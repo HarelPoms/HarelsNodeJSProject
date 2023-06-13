@@ -23,7 +23,7 @@ router.get("/", loggedInMiddleware, permissionsMiddleware(false,true,false,false
 //TODO fix middleware to consider the user himself
 router.get("/:id", loggedInMiddleware, permissionsMiddleware(false,true,false,true), async (req, res,next) => {
     let idTest = await initialValidationService.initialJoiValidation(usersValidationService.userIdValidation, req.params.id);
-    if(!idTest) return next(new CustomError(400, "Invalid id provided"));
+    if(!idTest[0]) return next(new CustomError(400, idTest[1]));
     let wantedUser = await usersServiceModel.getUserById(req.params.id);
     finalCheck(res, wantedUser, 404, "User Not Found");
 });
@@ -31,7 +31,7 @@ router.get("/:id", loggedInMiddleware, permissionsMiddleware(false,true,false,tr
 //Register User, authorization : all, return : registered user, needs unique email
 router.post("/", async (req, res) => {
     let registerBodyTest = await initialValidationService.initialJoiValidation(usersValidationService.registerUserValidation, req.body);
-    if(!registerBodyTest) return next(new CustomError(400,"Invalid user data provided"));
+    if(!registerBodyTest[0]) return next(new CustomError(400,registerBodyTest[1]));
     let normalizedUser = await normalizeUser(req.body);
     normalizedUser.password = await hashService.generateHash(normalizedUser.password);
     let createdUser = await usersServiceModel.registerUser(normalizedUser);
@@ -41,7 +41,7 @@ router.post("/", async (req, res) => {
 //Login User, authorization : all, return : Encrypted token
 router.post("/login", async (req,res, next) =>{
     let loginBodyTest = await initialValidationService.initialJoiValidation(usersValidationService.loginUserValidation, req.body);
-    if(!loginBodyTest) return next(new CustomError(400,"Invalid user data provided"));
+    if(!loginBodyTest[0]) return next(new CustomError(400,loginBodyTest[1]));
     const userData = await usersServiceModel.getUserByEmail(req.body.email);
     if (!userData) return next(new CustomError(400,"invalid email and/or password"));
     const isPasswordMatch = await hashService.cmpHash(
@@ -61,9 +61,9 @@ router.post("/login", async (req,res, next) =>{
 //Edit user, authorization : The registered user, Return : The edited user
 router.put("/:id", loggedInMiddleware, permissionsMiddleware(false,false,false,true), async (req, res) => {
     let idTest = await initialValidationService.initialJoiValidation(usersValidationService.userIdValidation, req.params.id);
-    if(!idTest) return next(new CustomError(400, "Invalid id provided"));
+    if(!idTest[0]) return next(new CustomError(400, idTest[1]));
     let editBodyTest = await initialValidationService.initialJoiValidation(usersValidationService.registerUserValidation, req.body);
-    if(!editBodyTest) return next(new CustomError(400,"Invalid user data provided"));
+    if(!editBodyTest[0]) return next(new CustomError(400,editBodyTest[1]));
     let normalizedEditedUser = normalizeUser(req.body);
     normalizedEditedUser.password = await hashService.generateHash(normalizedEditedUser.password);
     let editResult = await usersServiceModel.updateUser(req.params.id, normalizedEditedUser);
@@ -73,7 +73,7 @@ router.put("/:id", loggedInMiddleware, permissionsMiddleware(false,false,false,t
 //Change is business status, authorization : The registered user, Return : The User
 router.patch("/:id", loggedInMiddleware, permissionsMiddleware(false,false,false,true), async (req, res) => {
     let idTest = await initialValidationService.initialJoiValidation(usersValidationService.userIdValidation, req.params.id);
-    if(!idTest) return next(new CustomError(400, "Invalid id provided"));
+    if(!idTest[0]) return next(new CustomError(400, idTest[1]));
     let businessStatusUpdateResult = await usersServiceModel.changeBusinessStatusById(req.params.id);
     finalCheck(res, businessStatusUpdateResult, 400, "User to update not found");
 })
@@ -81,7 +81,7 @@ router.patch("/:id", loggedInMiddleware, permissionsMiddleware(false,false,false
 //Delete User, Authorization : The registered User or Admin, return : The Deleted User
 router.delete("/:id", loggedInMiddleware, permissionsMiddleware(false,true,false,true),async (req, res) => {
     let idTest = await initialValidationService.initialJoiValidation(usersValidationService.userIdValidation, req.params.id);
-    if(!idTest) return next(new CustomError(400, "Invalid id provided"));
+    if(!idTest[0]) return next(new CustomError(400, idTest[1]));
     let deletedUser = await usersServiceModel.deleteUserById(req.params.id);
     finalCheck(res, deletedUser, 400, "User to delete not found");
 })

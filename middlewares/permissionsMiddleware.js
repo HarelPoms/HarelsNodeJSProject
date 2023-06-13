@@ -25,9 +25,6 @@ const checkIfBizOwner = async (userId, cardId, res, next) => {
 const userCheckIfTheSameUser = async (loggedInUserId, idOfUserDataToAccess, res, next) => {
   try{
     await userIdValidation(idOfUserDataToAccess);
-    // if(loggedInUserId !== idOfUserDataToAccess){
-    //   res.status(401).json({msg: "You are not allowed to access this"})
-    // }
     const UserData = await getUserById(idOfUserDataToAccess);
     if (!UserData) {
       return res.status(400).json({ msg: "User not found" });

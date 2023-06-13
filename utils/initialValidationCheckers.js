@@ -1,10 +1,10 @@
 const initialJoiValidation = async (ValidationMethod, ObjectToValidate) => {
     try{
         await ValidationMethod(ObjectToValidate);
-        return true;
+        return [true,"No  errors"];
     }
     catch(err){
-        return false;
+        return [false,err];
     }
 }
 
