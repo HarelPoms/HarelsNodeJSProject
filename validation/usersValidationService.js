@@ -2,6 +2,7 @@ const config = require("config");
 const joiRegisterValidation = require("./joi/registerValidation");
 const joiLoginValidation = require("./joi/loginValidation");
 const joiUserIdValidation = require("./joi/userIdValidation");
+const joiProfileValidation = require("./joi/profileValidation");
 
 const validatorOption = config.get("validatorOption");
 
@@ -23,8 +24,15 @@ const userIdValidation = (userInput) => {
   }
   throw new Error("validator undefined");
 }
+const profileUserValidation = (userInput) => {
+  if (validatorOption === "Joi") {
+    return joiProfileValidation.validateProfileSchema(userInput);
+  }
+  throw new Error("validator undefined");
+}
 module.exports = {
   registerUserValidation,
   loginUserValidation,
-  userIdValidation
+  userIdValidation,
+  profileUserValidation
 };

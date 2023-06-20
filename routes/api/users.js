@@ -62,10 +62,12 @@ router.post("/login", async (req,res, next) =>{
 router.put("/:id", loggedInMiddleware, permissionsMiddleware(false,false,false,true), async (req, res, next) => {
     let idTest = await initialValidationService.initialJoiValidation(usersValidationService.userIdValidation, req.params.id);
     if(!idTest[0]) return next(new CustomError(400, idTest[1]));
-    let editBodyTest = await initialValidationService.initialJoiValidation(usersValidationService.registerUserValidation, req.body);
+    let editBodyTest = await initialValidationService.initialJoiValidation(usersValidationService.profileUserValidation, req.body);
     if(!editBodyTest[0]) return next(new CustomError(400,editBodyTest[1]));
     let normalizedEditedUser = normalizeUser(req.body);
-    normalizedEditedUser.password = await hashService.generateHash(normalizedEditedUser.password);
+    if(normalizedEditedUser.password){
+        normalizedEditedUser.password = await hashService.generateHash(normalizedEditedUser.password);
+    }
     let editResult = await usersServiceModel.updateUser(req.params.id, normalizedEditedUser);
     finalCheck(res, editResult, 400, "User to edit not found");
 });
