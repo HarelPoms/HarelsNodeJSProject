@@ -80,6 +80,8 @@ router.patch("/bizNumberOf/:id/to/:bizId", loggedInMiddleware, permissionsMiddle
     async (req, res, next) => {
         let idTest = await initialValidationService.initialJoiValidation(cardsValidationService.cardIdValidation, req.params.id);
         if(!idTest[0]) return next(new CustomError(400, idTest[1]));
+        const checkIfCardExists = await cardsServiceModel.getCardById(req.params.id);
+        if(!checkIfCardExists) return next(new CustomError(400, "Card with given Id doesn't exist"));
         let bizIdTest = await initialValidationService.initialJoiValidation(cardsValidationService.bizNumberValidation, req.params.bizId);
         if(!bizIdTest[0]) return next(new CustomError(400, bizIdTest[1]));
         const checkIfBizNumIsTaken = await cardsServiceModel.getCardByBizNumber(req.params.bizId);
