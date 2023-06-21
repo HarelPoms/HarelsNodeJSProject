@@ -82,7 +82,6 @@ router.patch("/bizNumberOf/:id/to/:bizId", loggedInMiddleware, permissionsMiddle
         if(!idTest[0]) return next(new CustomError(400, idTest[1]));
         let bizIdTest = await initialValidationService.initialJoiValidation(cardsValidationService.bizNumberValidation, req.params.bizId);
         if(!bizIdTest[0]) return next(new CustomError(400, bizIdTest[1]));
-        //let cardWithUpdatedBizNum;
         const checkIfBizNumIsTaken = await cardsServiceModel.getCardByBizNumber(req.params.bizId);
         if(checkIfBizNumIsTaken){
             return next(new CustomError(400, "Cannot update bizNumber, given bizNum already taken"));
