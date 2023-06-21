@@ -76,6 +76,21 @@ router.patch("/:id", loggedInMiddleware, async (req, res, next) => {
     }
 })
 
+router.patch("/bizNumberOf/:id/to/:bizId", loggedInMiddleware, permissionsMiddleware(false,true,false,false),
+    async (req, res, next) => {
+        let idTest = await initialValidationService.initialJoiValidation(cardsValidationService.cardIdValidation, req.params.id);
+        if(!idTest[0]) return next(new CustomError(400, idTest[1]));
+        let bizIdTest = await initialValidationService.initialJoiValidation(cardsValidationService.bizNumberValidation, req.params.bizId);
+        if(!bizIdTest[0]) return next(new CustomError(400, bizIdTest[1]));
+        //let cardWithUpdatedBizNum;
+        const checkIfBizNumIsTaken = await cardsServiceModel.getCardByBizNumber(req.params.bizId);
+        if(checkIfBizNumIsTaken){
+            return next(new CustomError(400, "Cannot update bizNumber, given bizNum already taken"));
+        }
+        const updatedCardFromDB = await cardsServiceModel.updateCard(req.params.id, {bizNumber: req.params.bizId});
+        res.status(200).json(updatedCardFromDB);
+});
+
 //Delete Card, Authorization : The User who created the card, or admin, return : The Deleted Card
 router.delete("/:id", loggedInMiddleware, permissionsMiddleware(false,true,true,false),  async (req, res,next) => {
     let idTest = await initialValidationService.initialJoiValidation(cardsValidationService.cardIdValidation, req.params.id);

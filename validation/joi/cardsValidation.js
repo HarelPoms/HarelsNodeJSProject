@@ -44,6 +44,8 @@ const editCardSchema = Joi.object({...createCardTemplate, likes: Joi.array().ite
 
 const cardIdSchema = Joi.string().hex().length(24).required();
 
+const bizNumberSchema = Joi.number().min(1000000).max(9999999).required();
+
 const validateCreateCardSchema = (userInput) => {
   return createCardSchema.validateAsync(userInput);
 };
@@ -56,6 +58,10 @@ const validateCardIdSchema = (userInput) => {
   return cardIdSchema.validateAsync(userInput);
 }
 
+const validateBizNumberSchema = (userInput) => {
+  return bizNumberSchema.validateAsync(userInput);
+}
+
 module.exports = {
-  validateCreateCardSchema, validateEditCardSchema, validateCardIdSchema
+  validateCreateCardSchema, validateEditCardSchema, validateCardIdSchema, validateBizNumberSchema
 };

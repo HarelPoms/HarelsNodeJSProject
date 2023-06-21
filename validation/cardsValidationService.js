@@ -24,6 +24,13 @@ const cardIdValidation = (userInput) => {
   throw new Error("validator undefined");
 }
 
+const bizNumberValidation = (userInput) => {
+  if (validatorOption === "Joi") {
+    return joiCardsValidation.validateBizNumberSchema(userInput);
+  }
+  throw new Error("validator undefined");
+}
+
 module.exports = {
-  createCardValidation, editCardValidation, cardIdValidation
+  createCardValidation, editCardValidation, cardIdValidation, bizNumberValidation
 };
