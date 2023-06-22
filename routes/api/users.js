@@ -18,31 +18,7 @@ const redisIOConn = new redisIOPackage({
     password: "QkKcA2LJpxqOtgEigqOoCv0sxBGn2ZbG",
     db: 0, // Defaults to 0
 });
-const { createClient } = require("redis");
 
-const redisClient = createClient({
-    password: 'QkKcA2LJpxqOtgEigqOoCv0sxBGn2ZbG',
-    socket: {
-        host: 'redis-11210.c293.eu-central-1-1.ec2.cloud.redislabs.com',
-        port: 11210
-    }
-});
-
-const activateRedis = async () => {
-    await redisClient.connect();
-}
-
-activateRedis();
-
-// const redisClient = redis.createClient({
-//     host: 'redis://default:QkKcA2LJpxqOtgEigqOoCv0sxBGn2ZbG@redis-11210.c293.eu-central-1-1.ec2.cloud.redislabs.com:11210',
-//     port: '6379'
-//     // host: '127.0.0.1',
-//     // port: '6379'
-// });
-// const redisIO = new redisIOPackage();
-
-//Error template : return next(new CustomError(500,"Fail"));
 const maxNumberOfFailedLogins = 3;
 const timeWindowForFailedLogins = 60 * 60 * 24;
 
@@ -78,7 +54,6 @@ router.post("/login", async (req,res, next) =>{
     const userData = await usersServiceModel.getUserByEmail(req.body.email);
     if (!userData) return next(new CustomError(400,"Invalid email"));
     let userAttempts = await redisIOConn.get(req.body.email);
-    console.log(userAttempts);
     if (userAttempts >= maxNumberOfFailedLogins) {
         return next(new CustomError(429, "Too many login attempts, try tomorrow"));
     }
