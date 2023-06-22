@@ -10,8 +10,41 @@ const hashService = require("../../utils/hash/hashService");
 const { generateToken } = require("../../utils/token/tokenService");
 const finalCheck = require("../../utils/finalResponseChecker");
 const initialValidationService = require("../../utils/initialValidationCheckers");
+const redisIOPackage = require('ioredis');
+const redisIOConn = new redisIOPackage({
+    port: 11210, // Redis port
+    host: "redis-11210.c293.eu-central-1-1.ec2.cloud.redislabs.com", // Redis host
+    username: "default", // needs Redis >= 6
+    password: "QkKcA2LJpxqOtgEigqOoCv0sxBGn2ZbG",
+    db: 0, // Defaults to 0
+});
+const { createClient } = require("redis");
+
+const redisClient = createClient({
+    password: 'QkKcA2LJpxqOtgEigqOoCv0sxBGn2ZbG',
+    socket: {
+        host: 'redis-11210.c293.eu-central-1-1.ec2.cloud.redislabs.com',
+        port: 11210
+    }
+});
+
+const activateRedis = async () => {
+    await redisClient.connect();
+}
+
+activateRedis();
+
+// const redisClient = redis.createClient({
+//     host: 'redis://default:QkKcA2LJpxqOtgEigqOoCv0sxBGn2ZbG@redis-11210.c293.eu-central-1-1.ec2.cloud.redislabs.com:11210',
+//     port: '6379'
+//     // host: '127.0.0.1',
+//     // port: '6379'
+// });
+// const redisIO = new redisIOPackage();
 
 //Error template : return next(new CustomError(500,"Fail"));
+const maxNumberOfFailedLogins = 3;
+const timeWindowForFailedLogins = 60 * 60 * 24;
 
 //Get all users, authorization : Admin, Return : array of users
 router.get("/", loggedInMiddleware, permissionsMiddleware(false,true,false,false), async (req, res,next) => {
@@ -43,13 +76,22 @@ router.post("/login", async (req,res, next) =>{
     let loginBodyTest = await initialValidationService.initialJoiValidation(usersValidationService.loginUserValidation, req.body);
     if(!loginBodyTest[0]) return next(new CustomError(400,loginBodyTest[1]));
     const userData = await usersServiceModel.getUserByEmail(req.body.email);
-    if (!userData) return next(new CustomError(400,"invalid email and/or password"));
+    if (!userData) return next(new CustomError(400,"Invalid email"));
+    let userAttempts = await redisIOConn.get(req.body.email);
+    console.log(userAttempts);
+    if (userAttempts >= maxNumberOfFailedLogins) {
+        return next(new CustomError(429, "Too many login attempts, try tomorrow"));
+    }
     const isPasswordMatch = await hashService.cmpHash(
         req.body.password,
         userData.password
     );
     if (!isPasswordMatch)
-        return next(new CustomError(400,"invalid email and/or password"));
+    {
+        await redisIOConn.set(req.body.email, ++userAttempts, 'EX', timeWindowForFailedLogins);
+        return next(new CustomError(400,"Invalid password"));
+    }
+    await redisIOConn.del(req.body.email);
     const token = await generateToken({
         _id: userData._id,
         isBusiness: userData.isBusiness,
