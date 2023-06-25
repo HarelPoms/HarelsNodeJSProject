@@ -2,6 +2,7 @@ const morgan = require("morgan");
 const chalk = require("chalk");
 const logDirMaker = require("../../../utils/fileLogger/makeLogDir");
 const logMaker = require("../../../utils/fileLogger/createLog");
+const dateGenerator = require("../../../utils/fileLogger/dateGenerator");
 
 logDirMaker.createLogDir();
 
@@ -15,12 +16,7 @@ const logger = () => {
             tokens["response-time"](req, res),
             "ms"
         ];
-        const date = new Date();
-
-        let currentDay= String(date.getDate()).padStart(2, '0');
-        let currentMonth = String(date.getMonth()+1).padStart(2,"0");
-        let currentYear = date.getFullYear();
-        let currentDate = `${currentDay}-${currentMonth}-${currentYear}`;
+        let currentDate = dateGenerator.generateDate();
 
         let resStatus = tokens.status(req,res);
         if(resStatus >= 400){
