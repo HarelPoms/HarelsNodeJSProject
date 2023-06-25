@@ -15,3 +15,4 @@ Sunday 25/6/2023 15:10:25 +03:00 GMT+2 POST /api/users/login 400 289.518 ms
 Sunday 25/6/2023 15:14:56 +03:00 Asia/Jerusalem POST /api/users/login 400 356.359 ms
 Sunday 25/6/2023 15:27:23 +03:00 GMT Asia/Jerusalem POST /api/users/login 400 308.032 ms
 Sunday 25/6/2023 15:29:17 GMT+03:00 Asia/Jerusalem POST /api/users/login 429 107.416 ms
+Sunday 25/6/2023 16:53:42 GMT+03:00 Asia/Jerusalem POST /api/users/login 400 434.572 ms
