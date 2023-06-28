@@ -167,6 +167,85 @@ address (object containing) :
         -- Optional
 ```
 
+#### Login a user
+
+```bash http 
+    POST /api/users/login
+```
+
+``` bash 
+Request:
+- Body must include existing user email and correct password, example :
+{
+    "email":"kenny@gmail.com",
+    "password":"Aa123456@"
+}
+- If the password is wrong for the same user 3 times in a row, the user will be locked out for 24 hours.
+```
+
+#### Edit a user
+
+```bash http 
+    PUT /api/users/:id
+```
+
+``` bash 
+Request:
+- id must be a valid user id
+- Body may include all of the details to be updated the way an exhaustive profile update would occur
+  but minimally all that is needed for a barebones update is the updated address of the user and his isBusiness value, example :
+{
+    "name": {
+      "first": "kenny",
+      "last": "mc"
+    },
+    "phone": "0500000000",
+    "email": "kenny@gmail.com",
+    "password": "Aa123456!",
+    "address": {
+      "country": "Israel",
+      "city": "Ashkeluna",
+      "street": "Victory Square 2",
+      "houseNumber": 255
+    },
+    "isAdmin": true,
+    "isBusiness": false
+  }
+- Note that from this entire example, only isBusiness and address as they are shown are required, all of the other details both in the example and in the exhaustive description found in the register api are entirely optional here.
+-- A token must be attached to the header
+-- The token must involve the user whose profile is being edited in the request.
+```
+
+#### Change a users business status
+
+```bash http 
+    PATCH /api/users/:id
+```
+
+```bash 
+    Request: 
+    -- The id must be a valid user id
+    -- A token must be attached to the header
+    -- The token must involve the user whose business status is to be updated.
+```
+
+#### Delete a user
+
+```bash http 
+    DELETE /api/users/:id
+```
+
+```bash 
+    Request: 
+    -- The id must be a valid user id
+    -- A token must be attached to the header
+    -- The token must involve an admin, only an admin may delete a user.
+```
+
+
+
+
+
 
 
 
