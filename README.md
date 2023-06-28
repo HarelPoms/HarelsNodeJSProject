@@ -45,7 +45,7 @@ And if there are no connection errors to the database you should see the message
 
 `connected to mongo`
 
-### Available Routes
+### Available User Routes
 
 #### Get all users
 
@@ -241,6 +241,10 @@ Request:
     -- A token must be attached to the header
     -- The token must involve an admin, only an admin may delete a user.
 ```
+
+### Available Card Routes
+
+#### Get All Cards
 
 
 
