@@ -174,7 +174,8 @@ address (object containing) :
 ```
 
 Request:
-- Body must include existing user email and correct password, example : \\n
+- Body must include existing user email and correct password, example :
+
 {
     "email":"kenny@gmail.com",
     "password":"Aa123456@"
