@@ -55,6 +55,121 @@ And if there are no connection errors to the database you should see the message
 
 Request:
 
-- Must provide token of an admin user to get an answer from this api
+- Must provide token of a logged in admin user to get an answer from this api
+
+#### Get a specific user
+
+```bash http 
+    GET /api/users/:id
+```
+
+Request:
+- Must include valid id param of requested user
+- Must provide token of an admin user or the user himself to get an answer from this api
+
+#### Register a user
+
+```bash http 
+    POST /api/users/
+```
+
+Request:
+- Body must include bare minimum template for user creation, optionals non-withstanding, example :
+``` bash 
+{
+    "name": {
+      "first": "Hank",
+      "last": "Fireant"
+    },
+    "phone": "0500000000",
+    "email": "hank@gmail.com", 
+    "password": "Aa123456!",
+    "address": {
+      "country": "NL",
+      "city": "Amsterdam",
+      "street": "Merchant Coast",
+      "houseNumber": 255
+    },"isBusiness": true
+  }
+
+    name (object containing):
+        first 
+            -- string
+            -- required
+            -- min 2
+            -- max 256
+        middle
+            -- optional 
+            -- string
+            -- max 256
+        last
+            -- string
+            -- required
+            -- min 2
+            -- max 256
+    phone 
+        -- string
+        -- required
+        -- expects a valid phone number, in the format of a '0' followed by 1 or 2 digits, followed by an optional hyphen/whitespace, then 3 digits, then an optional white space, followed by 4 digits.
+    email
+        -- string
+        -- required
+        -- must be unique
+        -- must be lowercase
+        -- must match the pattern of an email address, for instance bob@ross.com
+    password
+        -- string
+        -- required
+        -- must contain at least one uppercase letter, one lowercase letter, one digit, one special character, and is at least 8 characters long.
+    image (optional object which if added must contain):
+        URL : 
+            --  string
+            --  optional
+            --  if included must be a valid URL address.
+        alt : 
+            -- string
+            -- required
+            -- min 2
+            -- max 256
+    address (object containing) :
+        state :
+            -- optional 
+            -- string
+            -- max 256
+        country :   
+            -- string
+            -- required
+            -- min 2
+            -- max 256
+        city :  
+            -- string
+            -- required
+            -- min 2
+            -- max 256
+        street : 
+            -- string
+            -- required
+            -- min 2
+            -- max 256
+        houseNumber :
+            -- Number
+            -- required
+            -- minLength 1
+        zip :
+            -- Number
+            -- Optional
+            -- minLength 4
+        isAdmin :
+            -- Boolean
+            -- Optional
+        isBusiness :
+            -- Boolean
+            -- Optional
+```
+
+
+
+
+
 
 
