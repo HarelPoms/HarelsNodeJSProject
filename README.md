@@ -246,6 +246,180 @@ Request:
 
 #### Get All Cards
 
+```bash http 
+    GET /api/cards/
+```
+
+-- no requirements are needed, neither in the header or the body of the request
+
+#### Get My Cards
+
+``` bash http
+    GET /api/cards/my-cards/ 
+```
+
+``` bash
+    -- Request must inlcude a token in its header, of a logged in business user
+```
+
+### Get a specific card
+
+``` bash http
+    GET /api/cards/:id
+```
+-- no requirements are needed, neither in the header or the body of the request
+
+### Create a new card
+
+``` bash http
+    POST /api/cards/
+```
+
+``` bash http 
+    The body of the request must contain a bare minimum template to create a card, for example:
+    {
+    "title": "Black Library 7",
+    "subTitle": "Home of Warhammer 40k literature",
+    "description": "Official Publisher",
+    "phone": "0500000000",
+    "email": "blgw2@gmail.com",
+    "address": {
+      "country": "UK",
+      "city": "London",
+      "street": "Churchill",
+      "houseNumber": 23,
+      "zip": 0
+    }
+  }
+```
+
+``` bash 
+Full template for card creation
+title:
+    -- String
+    -- required
+    -- minLength 2
+    -- maxLength 256
+subTitle:
+    -- String
+    -- required
+    -- minLength 2
+    -- maxLength 256
+description:
+    -- String
+    -- required
+    -- minLength 2
+    -- maxLength 1024 
+phone:
+    -- string
+    -- required
+    -- expects a valid phone number, in the format of a '0' followed by 1 or 2 digits, followed by an optional hyphen/whitespace, then 3 digits, then an optional white space, followed by 4 digits.
+email:
+    -- string
+    -- required
+    -- must be unique
+    -- must be lowercase
+    -- must match the pattern of an email address, for instance bob@ross.com
+web:
+    --  string
+    --  optional
+    --  if included must be a valid URL address.
+image: (optional object which if added must contain):
+    URL : 
+        --  string
+        --  optional
+        --  if included must be a valid URL address.
+    alt : 
+        -- string
+        -- required
+        -- min 2
+        -- max 256
+address (object containing) :
+    state :
+        -- optional 
+        -- string
+        -- max 256
+    country :   
+        -- string
+        -- required
+        -- min 2
+        -- max 256
+    city :  
+        -- string
+        -- required
+        -- min 2
+        -- max 256
+    street : 
+        -- string
+        -- required
+        -- min 2
+        -- max 256
+    houseNumber :
+        -- Number
+        -- required
+        -- minLength 1
+    zip :
+        -- Number
+        -- Optional
+        -- minLength 4
+    isAdmin :
+        -- Boolean
+        -- Optional
+    isBusiness :
+        -- Boolean
+        -- Optional
+bizNumber :
+    -- Number
+    -- required
+    -- min and max length 7
+```
+
+-- request must include token of logged in business user in its header.
+
+### Edit an existing card
+
+``` bash http
+    PUT /api/cards/:id
+```
+
+-- The body of the request is similar in every way to what was requested in create card except that a cards likes may be edited within its body as well, the likes of a card are an array of strings and would thus look like so:  "likes": ["6479efe72ce8d8815ab9218f, 6479efe72ce8d8815ab92194"].    
+-- request must include token in its header of the user who owns said card.
+-- The card id provided must be valid and that of an existing card.
+
+### Like an existing card
+
+``` bash http
+    PATCH /api/cards/:id
+```
+
+-- request must include token of logged in user in its header.
+-- id param must be valid and be an id of an existing card.
+
+### Change the business number of an existing card
+
+``` bash http
+    PATCH /api/cards/bizNumberOf/:id/to/:bizId
+```
+
+-- request must include token of a logged in admin in its header.
+-- id param must be valid and be an id of an existing card.
+-- bizId param must be a valid business number that is not already taken by another card/business
+
+### Delete an existing card
+
+``` bash http
+    DELETE /api/cards/:id
+```
+
+-- request must include token of a logged in admin in its header.
+-- id param must be valid and be an id of an existing card.
+
+
+
+
+
+
+
 
 
 
