@@ -382,7 +382,8 @@ bizNumber :
     PUT /api/cards/:id
 ```
 
--- The body of the request is similar in every way to what was requested in create card except that a cards likes may be edited within its body as well, the likes of a card are an array of strings and would thus look like so:  "likes": ["6479efe72ce8d8815ab9218f, 6479efe72ce8d8815ab92194"].    
+-- The body of the request is similar in every way to what was requested in create card except that a cards likes may be edited within its body as well, the likes of a card are an array of strings and would thus look like so:
+"likes": ["6479efe72ce8d8815ab9218f, 6479efe72ce8d8815ab92194"].    
 -- request must include token in its header of the user who owns said card.
 -- The card id provided must be valid and that of an existing card.
 
