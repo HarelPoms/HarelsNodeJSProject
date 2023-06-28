@@ -173,7 +173,6 @@ address (object containing) :
     POST /api/users/login
 ```
 
-``` bash 
 Request:
 - Body must include existing user email and correct password, example :
 {
@@ -181,7 +180,7 @@ Request:
     "password":"Aa123456@"
 }
 - If the password is wrong for the same user 3 times in a row, the user will be locked out for 24 hours.
-```
+
 
 #### Edit a user
 
