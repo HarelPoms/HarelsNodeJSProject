@@ -26,17 +26,35 @@ you can run:
 
 - It will run the node server in production mode
 - The server will not reload if you make edits.
+- The print at the terminal will be:
+
+`Connection string mongodb+srv://Admin:Aa123456!@hackerucluster.cd0j0s0.mongodb.net/NodeJSFinalProjectDB` (in yellow)
+`Server running on http://localhost:8181/` (in blue)
+
 
 ### `npm run dev`
 
 - Runs the server with nodemon
 - The server will reload if you make edits
-- The print at the terminal will be purple with the message:
+- The print at the terminal will be:
 
-`server run on: http://localhost:8181/`
+`Connection string mongodb://127.0.0.1:27017/NodeJSFinalProjectDB` (in yellow)
+`Server running on http://localhost:8181/` (in blue)
 
 And if there are no connection errors to the database you should see the message in cyan:
 
 `connected to mongo`
+
+### Available Routes
+
+#### Get all users
+
+```bash http 
+    GET /api/users/
+```
+
+Request:
+
+- Must provide token of an admin user to get an answer from this api
 
 
