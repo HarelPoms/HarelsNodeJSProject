@@ -57,6 +57,9 @@ Request:
 
 - Must provide token of a logged in admin user to get an answer from this api
 
+Response :
+- Will return all the users in the database.
+
 #### Get a specific user
 
 ```bash http 
@@ -64,8 +67,11 @@ Request:
 ```
 
 Request:
-- Must include valid id param of requested user
+- Must include valid id param of requested user (string, length 24, hex)
 - Must provide token of an admin user or the user himself to get an answer from this api
+
+Response :
+-Will return the user as he is saved in the database.
 
 #### Register a user
 
@@ -167,6 +173,9 @@ address (object containing) :
         -- Optional
 ```
 
+Response :
+-Will return the user as he is saved in the database, if all details match the requirements.
+
 #### Login a user
 
 ```bash http 
@@ -178,10 +187,12 @@ Request:
 
 {
     "email":"kenny@gmail.com",
-    "password":"Aa123456@"
+    "password":"Aa123456!"
 }
 - If the password is wrong for the same user 3 times in a row, the user will be locked out for 24 hours.
 
+Response :
+-Will return the token for the user, now logged in, if successful.
 
 #### Edit a user
 
@@ -204,7 +215,7 @@ Request:
     "password": "Aa123456!",
     "address": {
       "country": "Israel",
-      "city": "Ashkeluna",
+      "city": "Ashkelon",
       "street": "Victory Square 2",
       "houseNumber": 255
     },
@@ -215,6 +226,9 @@ Request:
 -- A token must be attached to the header
 -- The token must involve the user whose profile is being edited in the request.
 ```
+
+Response :
+-Will return the user after the edits, if id and request body match accordingly.
 
 #### Change a users business status
 
@@ -229,6 +243,9 @@ Request:
     -- The token must involve the user whose business status is to be updated.
 ```
 
+Response :
+-Will return the user after the business status update if successful.
+
 #### Delete a user
 
 ```bash http 
@@ -242,6 +259,9 @@ Request:
     -- The token must involve an admin, only an admin may delete a user.
 ```
 
+Response :
+-Will return the deleted user if successful.
+
 ### Available Card Routes
 
 #### Get All Cards
@@ -251,6 +271,9 @@ Request:
 ```
 
 -- no requirements are needed, neither in the header or the body of the request
+
+Response :
+-Will return all the cards in the database.
 
 #### Get My Cards
 
@@ -262,12 +285,19 @@ Request:
     -- Request must inlcude a token in its header, of a logged in business user
 ```
 
+Response :
+-Will return the cards which the user has created.
+
 ### Get a specific card
 
 ``` bash http
     GET /api/cards/:id
 ```
 -- no requirements are needed, neither in the header or the body of the request
+-- id must be a valid id of an existing card
+
+Response :
+-Will return the card as it is in the database.
 
 ### Create a new card
 
@@ -376,6 +406,9 @@ bizNumber :
 
 -- request must include token of logged in business user in its header.
 
+Response :
+-Will return the card as it is saved in the database.
+
 ### Edit an existing card
 
 ``` bash http
@@ -387,6 +420,9 @@ bizNumber :
 -- request must include token in its header of the user who owns said card.
 -- The card id provided must be valid and that of an existing card.
 
+Response :
+-Will return the card as it is saved in the database post edit.
+
 ### Like an existing card
 
 ``` bash http
@@ -395,6 +431,9 @@ bizNumber :
 
 -- request must include token of logged in user in its header.
 -- id param must be valid and be an id of an existing card.
+
+Response :
+-Will return the card as it is saved in the database after the like being added, or removed.
 
 ### Change the business number of an existing card
 
@@ -406,6 +445,9 @@ bizNumber :
 -- id param must be valid and be an id of an existing card.
 -- bizId param must be a valid business number that is not already taken by another card/business
 
+Response :
+-Will return the card as it is saved in the database after the business number is changed, assuming it isn't taken.
+
 ### Delete an existing card
 
 ``` bash http
@@ -414,6 +456,9 @@ bizNumber :
 
 -- request must include token of a logged in admin in its header.
 -- id param must be valid and be an id of an existing card.
+
+Response :
+-Will return the card as it was saved in the database, prior to deletion.
 
 
 
