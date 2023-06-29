@@ -461,7 +461,9 @@ Response :
 -Will return the card as it was saved in the database, prior to deletion.
 
 --Final Remarks
-1.Each request will be given a response, if the response is an error, it is recorded in a file log under utils/fileLoggers/basicTextFileLogger/logs/dd-mm-yyyy.txt
+1.  Each request will be given a response. 
+    If the response is an error, it is recorded in a file log under ;
+    utils/fileLoggers/basicTextFileLogger/logs/dd-mm-yyyy.txt
 2.  The response is formatted in the console for the server to appear like so
     Wednesday 28/6/2023 09:32:37 GMT+03:00 Asia/Jerusalem GET /api/users/ 200 34.036 ms
     The color depends on the status code, 200 = blue, anything above 400 = red.
