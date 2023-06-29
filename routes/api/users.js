@@ -64,7 +64,7 @@ router.post("/login", async (req,res, next) =>{
     if (!isPasswordMatch)
     {
         await redisIOConn.set(req.body.email, ++userAttempts, 'EX', timeWindowForFailedLogins);
-        return next(new CustomError(400,"Invalid password"));
+        return next(new CustomError(403,"Invalid password"));
     }
     await redisIOConn.del(req.body.email);
     const token = await generateToken({
