@@ -41,6 +41,8 @@ router.get("/:id", loggedInMiddleware, permissionsMiddleware(false,true,false,tr
 router.post("/", async (req, res, next) => {
     let registerBodyTest = await initialValidationService.initialJoiValidation(usersValidationService.registerUserValidation, req.body);
     if(!registerBodyTest[0]) return next(new CustomError(400,registerBodyTest[1]));
+    let checkIfEmailIsTaken = await usersServiceModel.getUserByEmail(req.body.email);
+    if(checkIfEmailIsTaken) return next(new CustomError(400, "Email Already Taken"));
     let normalizedUser = await normalizeUser(req.body);
     normalizedUser.password = await hashService.generateHash(normalizedUser.password);
     let createdUser = await usersServiceModel.registerUser(normalizedUser);
