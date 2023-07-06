@@ -83,6 +83,10 @@ router.put("/:id", loggedInMiddleware, permissionsMiddleware(false,false,false,t
     if(!idTest[0]) return next(new CustomError(400, idTest[1]));
     let editBodyTest = await initialValidationService.initialJoiValidation(usersValidationService.profileUserValidation, req.body);
     if(!editBodyTest[0]) return next(new CustomError(400,editBodyTest[1]));
+    if(req.body.email){
+        let checkIfEmailIsTaken = await usersServiceModel.getUserByEmail(req.body.email);
+        if(checkIfEmailIsTaken) return next(new CustomError(400, "Email Already Taken"));
+    }
     let normalizedEditedUser = normalizeUser(req.body);
     if(normalizedEditedUser.password){
         normalizedEditedUser.password = await hashService.generateHash(normalizedEditedUser.password);
