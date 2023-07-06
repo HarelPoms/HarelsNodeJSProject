@@ -34,6 +34,7 @@ router.get("/:id", async (req, res, next) => {
 router.post("/", loggedInMiddleware, permissionsMiddleware(true,false,false,false), async (req,res,next) => {
     let newCardBodyTest = await initialValidationService.initialJoiValidation(cardsValidationService.createCardValidation, req.body);
     if(!newCardBodyTest[0]) return next(new CustomError(400,newCardBodyTest[1]));
+    if(!req.body.address) return next(new CustomError(400,"Cannot create card without address"));
     let normalCard = await normalizeCardService(req.body, req.userData._id);
     const newCard = await cardsServiceModel.createCard(normalCard);
     finalCheck(res, newCard, 500, "Card not created");
@@ -46,6 +47,7 @@ router.put("/:id", loggedInMiddleware , permissionsMiddleware(false,false,true,f
     if(!idTest[0]) return next(new CustomError(400, idTest[1]));
     let editBodyTest = await initialValidationService.initialJoiValidation(cardsValidationService.editCardValidation, req.body);
     if(!editBodyTest[0]) return next(new CustomError(400, editBodyTest[1]));
+    if(!req.body.address) return next(new CustomError(400,"Cannot edit card without address"));
     let normalizedCard = await normalizeCardService(req.body, req.userData._id);
     let editResult = await cardsServiceModel.updateCard(req.params.id, normalizedCard);
     finalCheck(res, editResult, 400, "Card to edit not found");

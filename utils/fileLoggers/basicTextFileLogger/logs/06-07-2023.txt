@@ -1,0 +1,4 @@
+Thursday 06/7/2023 12:31:25 GMT+03:00 Asia/Jerusalem POST /api/cards/ 401 68.086 ms
+Thursday 06/7/2023 12:32:05 GMT+03:00 Asia/Jerusalem POST /api/users/login 403 372.071 ms
+Thursday 06/7/2023 12:32:25 GMT+03:00 Asia/Jerusalem POST /api/cards/ 401 2.289 ms
+Thursday 06/7/2023 13:26:33 GMT+03:00 Asia/Jerusalem POST /api/cards/ 400 49.956 ms
